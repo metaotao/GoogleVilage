@@ -1,0 +1,4 @@
+[MPOS] 2016-11-22 14:33:18 [INFO ] (clickimage.GoogleGeocoderUtil:80) URLΪ:http://maps.googleapis.com/maps/api/geocode/json?language=zh-CN&sensor=true&latlng=29.78065251528906,118.2009761161305
+[MPOS] 2016-11-22 14:33:39 [ERROR] (clickimage.GoogleGeocoderUtil:119) java.net.ConnectException: Connection timed out: connect
+[MPOS] 2016-11-22 14:34:17 [INFO ] (clickimage.GoogleGeocoderUtil:80) URLΪ:http://maps.googleapis.com/maps/api/geocode/json?language=zh-CN&sensor=true&latlng=29.781327626722543,118.20111559099928
+[MPOS] 2016-11-22 14:34:38 [ERROR] (clickimage.GoogleGeocoderUtil:119) java.net.ConnectException: Connection timed out: connect

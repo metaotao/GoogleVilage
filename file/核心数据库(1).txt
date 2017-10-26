@@ -1,0 +1,638 @@
+————————————核心库core——————————
+create database core;
+#设置远程：用户名lb  密码123456#
+grant all privileges on core.* to 'lb' @'%' identified by '';
+
+
+———————————第一层：村落级————————————
+####村落ID对应行政位置参照表:region####
+#序号 省 市 县（区） 镇 村#
+create table region(
+   i_number    int primary key auto_increment,
+   v_province    varchar(50),
+   v_city        varchar(50),
+   v_county      varchar(50),
+   v_town        varchar(50),
+   v_village     varchar(50));
+
+
+####村落基本表:village####
+#村落ID 村落名 起始时间A 起始时间B 经度 纬度 锚点#
+create table village(
+   v_AID        varchar(255) not null,
+   v_name       varchar(50)  not null,
+   y_startA     year(4)      not null,
+   y_startB     year(4)      not null,  
+   d_longitude  double       not null,
+   d_latitude   double       not null,
+   v_point      varchar(50)  not null);
+   
+####村落附属参数表:village_attachement####
+#村落ID 时间    姓氏 状态 面积 简介描述 人口数量 民居数量     坐标x 坐标y 角度 创建时间 
+                  
+                祠堂名称 管理人 面积 类型   
+                牌坊名称 创建背景 类型 高度
+                道路名称 
+                河流名称  
+                植被名称 植被面积   
+                古井名称 深度                
+                古桥名称 命名背景
+                古亭名称 
+                戏台名称  
+                洞穴名称 
+                遗址名称#
+create table village_attachement(
+   v_AID          varchar(255) not null,
+   y_year         year(4)      not null,
+
+   v_surname      varchar(50),
+   v_state        varchar(50),
+   d_area         double,
+   t_description  text(20000),
+   i_people       int,
+   i_house        int,
+
+   d_x          double,
+   d_y          double,
+   d_angle      double,
+   v_start      varchar(50),
+
+   v_shrineName   varchar(50),
+   v_shrineKeeper varchar(50),
+   d_shrineArea   double,
+   v_shrineType   varchar(50),
+
+   v_toriiName    varchar(50),
+   v_toriiSource  varchar(100),
+   v_toriiType    varchar(50),
+   d_toriiHeight  double,
+
+   v_roadName     varchar(50),
+
+   v_riverName    varchar(50),
+
+   v_plantName    varchar(50),
+   d_plantArea    double,
+
+   v_wellName     varchar(50),
+   d_wellDepth    double,
+
+   v_bridge       varchar(50),
+   v_bridgeSource varchar(100),
+
+   v_pavilion     varchar(50),
+
+   v_stage        varchar(50),
+
+   v_cave         varchar(50),
+
+   v_ruins        varchar(50));
+
+#村落元素图像表：village_picture#
+#村落ID 图像路径 类型 名称#
+create table village_picture(
+   v_AID        varchar(255) not null,
+   v_url        varchar(255) not null,
+   v_type       varchar(50)  not null,
+   v_name       varchar(50));
+
+
+
+———————————第二层：民居级————————————
+####民居基本表:house####
+#村落ID 民居ID 起始时间A 起始时间B 经度 纬度 坐标x 坐标y 角度#
+create table house(
+   v_AID        varchar(255) not null,
+   v_BID        varchar(255) not null,
+   y_startA     year(4)      not null,
+   y_startB     year(4)      not null,    
+   d_longitude  double       not null,
+   d_latitude   double       not null,
+   d_x          double       not null,
+   d_y          double       not null,
+   d_angle      double       not null);
+
+####民居附属参数表:house_attachement####
+#民居ID  时间 名称 状态 户主 样式 面积  梁架类型 门楼类型 瓦作类型 墙体类型 窗户类型 地面构造 天井数量 简介描述#
+create table house_attachement(
+   v_BID          varchar(255) not null,
+   y_year         year(4)      not null,
+   v_name         varchar(50),
+   v_state        varchar(50),
+   v_holder       varchar(50),
+   v_style        varchar(50),
+   d_area         double,
+   v_girder       varchar(50),
+   v_door         varchar(50),
+   v_title        varchar(50),
+   v_wall         varchar(50),
+   v_window       varchar(50),
+   v_ground       varchar(50),
+   i_patio        int,
+   t_description  text(20000));
+
+#民居图像表：house_picture#
+#民居ID 图像路径 类型#
+create table house_picture(
+   v_BID        varchar(255) not null,
+   v_url        varchar(255) not null,
+   v_type       varchar(50));
+
+
+
+———————第三层：详细参数级——————
+图像：
+#Google图像表：picture_google#（独立表）
+#区域名 图像路径 图像ID 标识 起始经度 起始纬度 终止经度 终止纬度#
+create table picture_google(
+   v_place           varchar(50) not null,
+   v_url             varchar(255) not null,
+   v_PID 	     varchar(255) not null,
+   v_sign            varchar(255) not null,  
+   d_startLongitude  double       not null,
+   d_startLatitude   double       not null,
+   d_endLongitude    double       not null,
+   d_endLatitude     double       not null);
+
+
+#民居构件图像表：picture_house_part#
+#民居ID 图像路径 类型 名称#
+create table picture_house_part(
+   v_BID        varchar(255) not null,
+   v_url        varchar(255) not null,
+   v_type       varchar(50)  not null,
+   v_name       varchar(50));
+
+
+文献：
+#论文信息表:literature_paper#
+#民居ID 文献ID 文件路径 刊物 日期 作者 标题 关键词 摘要 正文 参考文献#
+create table literature_paper(
+   v_BID          varchar(255) not null,
+   v_CID          varchar(255) not null,
+   v_url          varchar(255) not null,
+   v_publication  varchar(30), 
+   d_date         date,
+   v_author       varchar(30),
+   v_title        varchar(50),
+   v_keyword      varchar(100),
+   t_abstract     text(1000),
+   t_text         longtext,
+   t_reference    text);
+
+#家谱信息表:literature_genealogy#
+#民居ID 文献ID 文件路径 姓名 儿子 女儿 父亲 字 号 生辰 功名 官爵 配偶 葬地 功绩#
+create table literature_genealogy(
+   v_BID          varchar(255) not null,
+   v_CID          varchar(255) not null,
+   v_url          varchar(255) not null,
+   v_name         varchar(50)  not null,		
+   v_son          varchar(50),		
+   v_daughter     varchar(50),		
+   v_father       varchar(50),
+   v_word         varchar(50),		
+   v_number       varchar(50),
+   d_birth        date,		
+   v_fame         varchar(255),
+   v_officialpost varchar(255),
+   v_spouse       varchar(255),
+   v_cemetery     varchar(255),
+   v_merit        varchar(255));
+
+
+#契约信息表:literature_contract#
+#民居ID 文献ID 文件路径 立约人 立约时间 甲方 乙方 证人 契约内容 生效日期 有效日期 立约时间#
+create table literature_contract(
+   v_BID          varchar(255) not null,
+   v_CID          varchar(255) not null,
+   v_url          varchar(255) not null,
+   v_covenantman  varchar(50), 
+   v_a            varchar(50),
+   v_b            varchar(50),
+   v_witness      varchar(50),
+   t_content      text(10000),
+   d_start        date,
+   d_end          date,
+   d_create       date);
+
+#扫描文献信息表:literature_picture#
+#民居ID 文献ID  文件路径 日期 作者 标题 内容  篇幅 字体 载体 记录方法  格式题材  简介描述#
+create table literature_picture(
+   v_BID          varchar(255) not null,
+   v_CID          varchar(255) not null,
+   v_url          varchar(255) not null,
+   d_date         date,
+   v_author       varchar(50),
+   v_title        varchar(50),
+   t_content      varchar(50),
+   i_length       int,
+   v_font         varchar(50),
+   v_carrier      varchar(50),
+   v_way          varchar(50),
+   v_format       varchar(50),
+   t_description  text(1000));
+
+
+
+
+文化：
+#视频、音频的流文件表：culture_file#
+#民居ID 文化场景ID 文件路径 类型 格式 时长 标题#
+create table culture_file(
+   v_BID          varchar(255) not null,
+   v_DID          varchar(255) not null,
+   v_url          varchar(255) not null,
+   v_type         varchar(50)  not null,
+   v_format       char(10) not null,
+   i_length       int  not null,
+   v_title        varchar(100) not null);
+   
+#方言信息表：culture_localism#
+#文化场景ID 类型 发声者 年龄 性别 体态特征  声道 采样率 采样位数 文本翻译#
+create table culture_localism(
+   v_DID          varchar(255) not null,
+   v_type         varchar(50)  not null,
+   v_people       varchar(255),
+   v_age          int,
+   v_sex          char(10),
+   v_special      varchar(50),
+   v_channel      varchar(50),
+   v_rate         varchar(50),
+   v_bit          int,
+   v_content      text(1000) not null);
+
+#演绎信息表：culture_scenes#
+#文化场景ID 类型 发生时间 发生地点 文本内容 文化背景描述#
+create table culture_scenes(
+   v_DID          varchar(255) not null,
+   v_type         varchar(50)  not null,
+   v_time         varchar(100),
+   v_address      varchar(255),
+   t_description  text(10000),
+   t_content      text(65535));
+
+
+
+灾损：
+#灾损物理参数表:damage_physical#
+#民居ID 时间 雨量 温度 湿度 声音 光敏照度 气压 颗粒（烟） CO H2S CO2 超声 张力 压力 计数光媒介 CCD 振动 电磁 地电阻 风速 微风速 水汽 O2#
+create table damage_physical(
+   v_BID            varchar(255),
+   d_time           datetime,
+   v_rainfall       varchar(50),
+   v_temperature    varchar(50),
+   v_humiditity     varchar(50),
+   v_sound          varchar(50),
+   v_photSensitive  varchar(50),
+   v_pressure       varchar(50),
+   v_particles      varchar(50),
+   v_CO             varchar(50),
+   v_H2S            varchar(50),
+   v_CO2            varchar(50),
+   v_ultrasonic     varchar(50),
+   v_tension        varchar(50),
+   v_stress         varchar(50),
+   v_count          varchar(50),
+   v_CCD            varchar(50),
+   v_vibration      varchar(50),
+   v_elecMagnentism varchar(50),
+   v_grouResistance varchar(50),
+   v_windSpeed      varchar(50),
+   v_breeSpeed      varchar(50),
+   v_steam          varchar(50),
+   v_O2             varchar(50));
+
+
+//传感器表
+create table damage_sensor(
+
+   //雨量传感器
+   v_rainfall_ID varchar(20) not null，         //传感器MAC地址
+   v_rainfall_PANID varchar(20) not null,       //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_rainfall_accuracy double not null,         //精度 
+   d_rainfall_power double not null,            //分辨率 有0.1mm/0.2mm/0.5mm/1mm四种 
+   d_rainfall_error double not null,            //误差
+   d_rainfall_precipitation double not null,    //降水量 ml
+   d_rainfall_intensity double not null,        //降水强度
+   d_rainfall_starttim double not null,         //降水开始时间
+   d_rainfall_endtime double not null,          //结束时间
+   v_rainfall_type varcahr(20) not null,        //传感器型号
+
+   //温度传感器 TCN75
+   v_temperature_ID varchar(20) not null,       //传感器MAC地址
+   v_temperature_PANID varchar(20) not null,    //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_temperature_accuracy double not null,      //精度
+   d_temperature_error double not null,         //误差
+   d_temperature_value double not null,         //温度值-单位'C
+   t_temperature_time  time   not null,         //测量时间
+   d_temperature_compensate double not null,    //误差补偿(由于电源等因素造成的)
+   v_temperature varcahr(20) not null,          //传感器型号
+
+
+   //湿度传感器 SH15 humidity
+   v_humidity_ID varchar(20) not null,          //传感器MAC地址
+   v_humidity_PANID varchar(20) not null,       //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_humidity_accuracy double not null,         //精度
+   d_humidity_error double not null,            //误差
+   t_humidity_time  time   not null,            //测量时间
+   d_humidity_value double not null,            //湿度值-单位RH
+   v_humidity varcahr(20) not null,             //传感器型号
+
+   //噪声传感器 CRY2112/2110
+   v_noise_ID varchar(20) not null,             //传感器MAC地址
+   v_noise_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_noise_accuracy double not null,            //精度
+   d_noise_power double not null,               //分辨率
+   d_noise_error double not null,               //误差
+   t_noise_time  time   not null,               //测量时间
+   d_noise_value double not null,               //分贝值-单位dB
+   v_noise_type  varchar(20)   not null,        //传感器型号
+
+   //光敏传感器
+   v_photosensitive_ID varchar(20) not null,             //传感器MAC地址
+   v_photosensitive_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_photosensitive_accuracy double not null,            //精度
+   d_photosensitive_error double not null,               //误差
+   t_photosensitive_time  time   not null,               //测量时间
+   d_photosensitive_value double not null,               //强度值-单位cd
+   v_photosensitive_type  varchar(20)   not null,        //传感器型号
+   
+   //气压传感器
+   v_pressure_ID varchar(20) not null,             //传感器MAC地址
+   v_pressure_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_pressure_accuracy double not null,            //精度
+   d_pressure_error double not null,               //误差
+   t_pressure_time  time   not null,               //测量时间
+   d_pressure_value double not null,               //气压值-单位pa
+   v_pressure_type  varchar(20)   not null,        //传感器型号
+   d_pressure_compensate double not null,          //温度补偿
+   
+   //颗粒(烟传感器)
+   v_smoke_ID varchar(20) not null,             //传感器MAC地址
+   v_smoke_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_smoke_accuracy double not null,            //精度
+   d_smoke_error double not null,               //误差
+   t_smoke_time  time   not null,               //测量时间
+   d_smoke_value double not null,               //浓度值-单位ppm
+   v_smoke_type  varchar(20)   not null,        //传感器型号
+
+   //co传感器
+   v_co_ID varchar(20) not null,             //传感器MAC地址
+   v_co_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_co_accuracy double not null,            //精度
+   d_co_error double not null,               //误差
+   t_co_time  time   not null,               //测量时间
+   d_co_value double not null,               //浓度值-单位ppm
+   v_co_type  varchar(20)   not null,        //传感器型号
+
+   //co2传感器
+   v_co2_ID varchar(20) not null,             //传感器MAC地址
+   v_co2_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_co2_accuracy double not null,            //精度
+   d_co2_error double not null,               //误差
+   t_co2_time  time   not null,               //测量时间
+   d_co2_value double not null,               //浓度值-单位ppm
+   v_co2_type  varchar(20)   not null,        //传感器型号
+
+   //h2s传感器
+   v_h2s_ID varchar(20) not null,             //传感器MAC地址
+   v_h2s_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_h2s_accuracy double not null,            //精度
+   d_h2s_error double not null,               //误差
+   t_h2s_time  time   not null,               //测量时间
+   d_h2s_value double not null,               //浓度值-单位ppm
+   v_h2s_type  varchar(20)   not null,        //传感器型号
+
+   //超声传感器 
+   v_ultrasonic_ID varchar(20) not null,             //传感器MAC地址
+   v_ultrasonic_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_ultrasonic_accuracy double not null,            //精度
+   d_ultrasonic_error double not null,               //误差
+   t_ultrasonic_time  time   not null,               //测量时间
+   d_ultrasonic_value double not null,               //距离值-单位m
+   v_ultrasonic_object varchar(20) not null,         //测量对象
+   v_ultrasonic_type  varchar(20)   not null,        //传感器型号
+
+   //张力传感器
+   v_tension_ID varchar(20) not null,             //传感器MAC地址
+   v_tension_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_tension_accuracy double not null,            //精度
+   d_tension_error double not null,               //误差
+   t_tension_time  time   not null,               //测量时间
+   d_tension_value double not null,               //张力值-单位N
+   v_tension_object varchar(20) not null          //测量对象
+   v_tension_type  varchar(20)   not null,        //传感器型号
+
+   
+   //压力传感器
+   v_stress_ID varchar(20) not null,             //传感器MAC地址
+   v_stress_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_stress_accuracy double not null,            //精度
+   d_stress_error double not null,               //误差
+   t_stress_time  time   not null,               //测量时间
+   d_stress_value double not null,               //压力力值-单位N
+   v_stress_object varchar(20) not null          //测量对象
+   v_stress_type  varchar(20)   not null,        //传感器型号
+
+   //计数传感器
+   v_count_ID varchar(20) not null,             //传感器MAC地址
+   v_count_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_count_accuracy double not null,            //精度
+   d_count_error double not null,               //误差
+   t_count_time  time   not null,               //测量时间
+   d_count_value double not null,               //数值-单位N
+   v_count_object varchar(20) not null          //测量对象
+   v_count_type  varchar(20)   not null,        //传感器型号
+
+   //CCD传感器
+   v_CCD_ID varchar(20) not null,             //传感器MAC地址
+   v_CCD_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_CCD_accuracy double not null,            //精度
+   d_CCD_error double not null,               //误差
+   t_CCD_time  time   not null,               //测量时间
+   v_CCD_value varchar(20) not null,          //保存路径-单位N
+   v_CCD_type  varchar(20)   not null,        //传感器型号
+
+   //振动传感器
+   v_vibration_ID varchar(20) not null,             //传感器MAC地址
+   v_vibration_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_vibration_accuracy double not null,            //精度
+   d_vibration_error double not null,               //误差
+   t_vibration_time  time   not null,               //测量时间
+   d_vibration_value double not null,               //频率值-单位N
+   v_vibration_object varchar(20) not null          //测量对象
+   v_vibration_type  varchar(20)   not null,        //传感器型号
+
+   //风速传感器
+   v_vibration_ID varchar(20) not null,             //传感器MAC地址
+   v_vibration_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_vibration_accuracy double not null,            //精度
+   d_vibration_error double not null,               //误差
+   t_vibration_time  time   not null,               //测量时间
+   d_vibration_value double not null,               //频率值-单位N
+   v_vibration_object varchar(20) not null          //测量对象
+   v_vibration_type  varchar(20)   not null,        //传感器型号
+   
+   //微风速传感器Breeze speed
+   v_breezespeed_ID varchar(20) not null,             //传感器MAC地址
+   v_breezespeed_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_breezespeed_accuracy double not null,            //精度
+   d_breezespeed_error double not null,               //误差
+   t_breezespeed_time  time   not null,               //测量时间
+   d_breezespeed_value double not null,               //频率值-单位N
+   v_breezespeed_object varchar(20) not null          //测量对象
+   v_breezespeed_type  varchar(20)   not null,        //传感器型号
+
+   //颗粒传感器(水汽)
+   v_steam_ID varchar(20) not null,             //传感器MAC地址
+   v_steam_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_steam_accuracy double not null,            //精度
+   d_steam_error double not null,               //误差
+   t_steam_time  time   not null,               //测量时间
+   d_steam_value double not null,               //浓度值-单位ppm
+   v_steam_type  varchar(20)   not null,        //传感器型号
+
+   //o2,h2,酒精,甲醛传感器
+   v_blend_ID varchar(20) not null,             //传感器MAC地址
+   v_blend_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_blend_accuracyo2 double not null,          //o2精度
+   d_blend_erroro2 double not null,             //o2误差
+   t_blend_time  time   not null,               //测量时间
+   d_blend_valueo2 double not null,             //o2浓度值-单位ppm
+   d_blend_accuracyh2 double not null,          //h2精度
+   d_blend_errorh2 double not null,             //h2误差
+   d_blend_valueh2 double not null,             //h2浓度值-单位ppm
+   d_blend_accuracyhyde double not null,        //甲醛精度
+   d_blend_errorhyde double not null,           //甲醛误差
+   d_blend_valuehyde double not null,           //甲醛浓度值-单位ppm
+   d_blend_accuracyalc double not null,          //酒精精度
+   d_blend_erroralc double not null,             //酒精误差
+   d_blend_valuealc double not null,             //酒精浓度值-单位ppm
+   v_blend_type  varchar(20)   not null,        //传感器型号
+   
+   //PM10传感器
+   v_PM10_ID varchar(20) not null,             //传感器MAC地址
+   v_PM10_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_PM10_accuracy double not null,            //精度
+   d_PM10_error double not null,               //误差
+   t_PM10_time  time   not null,               //测量时间
+   d_PM10_value double not null,               //浓度值-单位ppm
+   v_PM10_type  varchar(20)   not null,        //传感器型号
+
+   //含水量传感器
+   v_water_ID varchar(20) not null,             //传感器MAC地址
+   v_water_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_water_accuracy double not null,            //精度
+   d_water_error double not null,               //误差
+   t_water_time  time   not null,               //测量时间
+   d_water_value double not null,               //浓度值-单位ppm
+   v_water_type  varchar(20)   not null,        //传感器型号
+
+   //噪声传感器
+   v_noise_ID varchar(20) not null,             //传感器MAC地址
+   v_noise_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_noise_accuracy double not null,            //精度
+   d_noise_error double not null,               //误差
+   t_noise_time  time   not null,               //测量时间
+   d_noise_value double not null,               //浓度值-单位ppm
+   v_noise_type  varchar(20)   not null,        //传感器型号
+
+   //电量传感器
+   v_electricity_ID varchar(20) not null,             //传感器MAC地址
+   v_electricity_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_electricity_accuracy double not null,            //精度
+   d_electricity_error double not null,               //误差
+   t_electricity_time  time   not null,               //测量时间
+   d_electricity_value double not null,               //电量值
+   v_electricity_type  varchar(20)   not null,        //传感器型号
+   
+   //红外传感器
+   v_red_ID varchar(20) not null,             //传感器MAC地址
+   v_red_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_red_accuracy double not null,            //精度
+   d_red_error double not null,               //误差
+   t_red_time  time   not null,               //测量时间
+   d_red_value double not null,               //距离值
+   v_red_object varchar(20) not null,         //对象
+   v_red_type  varchar(20)   not null,        //传感器型号
+    
+   //定位传感器
+   v_location_ID varchar(20) not null,             //传感器MAC地址
+   v_location_PANID varchar(20) not null,          //传感器PAN地址(由位置确认的A_B_C_D_XXXXXXXX 16位地址)
+   d_location_accuracy double not null,            //精度
+   d_location_error double not null,               //误差
+   t_location_time  time   not null,               //测量时间
+   d_location_value1 double not null,               //定位值1
+   d_location_value2 double not null,         //定位值2
+   v_location_type  varchar(20)   not null,        //传感器型号
+);
+//传感网络表
+create table net(
+  i_ID int not null,               传感网ID
+  i_rainfull int not null,         雨量计传感器ID
+  i_temperature int not null,      温度传感器ID
+  i_sound int not null,            声音传感器ID
+  i_humidity int not null,         湿度传感器ID
+  i_photosensitive  not null,      光敏传感器ID
+  i_pressure int not null,         气压传感器ID 
+  i_smoke int not null,            颗粒（烟）传感器ID
+  i_co int not null,               co传感器ID
+  i_co2 int not null,              co2传感器ID
+  i_h2s int not null,              h2s传感器ID
+  i_ultrasonic int not null,       超声传感器ID
+  i_tension int not null,          张力传感器ID
+  i_count int not null,            计数传感器ID
+  i_stress int not null,           压力传感器ID
+  i_CCD int not null,              CCD传感器ID
+  i_vibration int not null,        振动传感器ID
+  i_resistance int not null,       电磁传感器ID
+  i_electromagnetism int not null, 地电阻传感器ID
+  i_windspeed int not null,        风速传感器ID
+  i_breezespeed int not null,      微风速传感器ID
+  i_steam int not null,            颗粒（水汽）传感器ID
+  i_PM10 int not null,             PM10传感器ID
+  i_water int not null,            含水量传感器ID
+  i_electricity int not null,      电量传感器ID
+  i_noise int not null,            噪声传感器ID
+  i_infrared int not null,         红外传感器ID
+  i_house int not null,            民居ID
+  i_blend int not null,            酒精 o2 h2 甲醛传感器
+  PRIMARY KEY (`net_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+//物理表
+create table damage_physics(
+  i_BID int not null,               民居ID
+  d_rainfull double not null,         雨量
+  d_temperature double not null,      温度
+  d_humidity double not null,         湿度
+  d_sound double not null,            声音
+  d_photosensitive double not null,   光照强度
+  d_pressure double not null,         气压值
+  d_smoke double not null,            颗粒（烟）浓度
+  d_co double not null,               co浓度
+  d_co2 double not null,              co2浓度
+  d_h2s double not null,              h2s浓度
+  d_ultrasonic double not null,       超声值
+  d_tension double not null,          表面张力值
+  d_stress double not null,           压力值
+  i_count int not null,               计数（光媒介）
+  v_CCD varchar(20) not null,         CCD
+  d_vibration double not null,        振动频率值 
+  d_resistance double not null,       电磁场强度值
+  d_electromagnetism double not null, 地电阻值
+  d_windspeed double not null,        风速值
+  d_breezespeed double not null,      微风速值
+  d_steam double not null,            颗粒（水汽）浓度
+  d_o2 double not null,               o2浓度值
+  d_h2 double not null,               h2浓度值
+  d_PM10 double not null,             PM10含量值
+  d_water double not null,            含水量
+  d_alcohol double not null,          酒精含量值
+  d_noise double not null,            噪声分贝         
+  d_electricity double not null,      电量
+  d_infrared double not null,         红外距离
+  d_formaldehyde double not null,     甲醛浓度 
+  t_time  time nor null               时间
+) ;
+   
